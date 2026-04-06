@@ -170,3 +170,9 @@ Route::group(['namespace' => 'MyParent','middleware' => 'my_parent',], function(
     Route::get('/my_children', 'MyController@children')->name('my_children');
 
 });
+use App\Services\SmsService;
+
+Route::get('/test-sms', function () {
+    $sms = new SmsService();
+    return $sms->send('+256708949155', 'Test SMS working 🚀');
+});

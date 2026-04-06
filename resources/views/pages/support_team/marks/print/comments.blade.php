@@ -3,11 +3,11 @@
         <tbody>
         <tr>
             <td><strong>CLASS TEACHER'S COMMENT:</strong></td>
-            <td>  {{ $exr->t_comment ?: str_repeat('__', 40) }}</td>
+            <td>{{ $exr->t_comment ?: str_repeat('__', 40) }}</td>
         </tr>
         <tr>
             <td><strong>PRINCIPAL'S COMMENT:</strong></td>
-            <td>  {{ $exr->p_comment ?: str_repeat('__', 40) }}</td>
+            <td>{{ $exr->p_comment ?: str_repeat('__', 40) }}</td>
         </tr>
         <tr>
             <td><strong>NEXT TERM BEGINS:</strong></td>
@@ -15,7 +15,7 @@
         </tr>
         <tr>
             <td><strong>NEXT TERM FEES:</strong></td>
-            <td><del style="text-decoration-style: double">N</del>{{ $s['next_term_fees_'.strtolower($ct)] }}</td>
+            <td>UGX {{ number_format($s['next_term_fees_'.strtolower($ct)]) }}</td>
         </tr>
         </tbody>
     </table>

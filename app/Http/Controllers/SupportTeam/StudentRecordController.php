@@ -14,7 +14,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use App\Mail\StudentLoginMail;
 
 class StudentRecordController extends Controller
 {
@@ -34,9 +36,12 @@ class StudentRecordController extends Controller
     public function reset_pass($st_id)
     {
         $st_id = Qs::decodeHash($st_id);
-        $data['password'] = Hash::make('student');
+        $password = Str::random(6);
+
+        $data['password'] = Hash::make($password);
         $this->user->update($st_id, $data);
-        return back()->with('flash_success', __('msg.p_reset'));
+
+        return back()->with('flash_success', 'Password reset. New Password: '.$password);
     }
 
     public function create()
@@ -55,14 +60,16 @@ class StudentRecordController extends Controller
        $sr =  $req->only(Qs::getStudentData());
 
         $ct = $this->my_class->findTypeByClass($req->my_class_id)->code;
-       /* $ct = ($ct == 'J') ? 'JSS' : $ct;
-        $ct = ($ct == 'S') ? 'SS' : $ct;*/
+
+        // 🔥 Generate random password
+        $password = Str::random(6);
 
         $data['user_type'] = 'student';
         $data['name'] = ucwords($req->name);
         $data['code'] = strtoupper(Str::random(10));
-        $data['password'] = Hash::make('student');
+        $data['password'] = Hash::make($password);
         $data['photo'] = Qs::getDefaultUserImage();
+
         $adm_no = $req->adm_no;
         $data['username'] = strtoupper(Qs::getAppCode().'/'.$ct.'/'.$sr['year_admitted'].'/'.($adm_no ?: mt_rand(1000, 99999)));
 
@@ -81,6 +88,19 @@ class StudentRecordController extends Controller
         $sr['session'] = Qs::getSetting('current_session');
 
         $this->student->createRecord($sr); // Create Student
+
+        // ✅ Show password to admin
+        session()->flash('success', 'Student created successfully. Password: '.$password);
+
+        // ✅ Send email if exists
+        if(!empty($user->email)){
+            try {
+                Mail::to($user->email)->send(new StudentLoginMail($user, $password));
+            } catch (\Exception $e) {
+                // Ignore email errors (optional)
+            }
+        }
+
         return Qs::jsonStoreOk();
     }
 
@@ -118,7 +138,6 @@ class StudentRecordController extends Controller
 
         $data['sr'] = $this->student->getRecord(['id' => $sr_id])->first();
 
-        /* Prevent Other Students/Parents from viewing Profile of others */
         if(Auth::user()->id != $data['sr']->user_id && !Qs::userIsTeamSAT() && !Qs::userIsMyChild($data['sr']->user_id, Auth::user()->id)){
             return redirect(route('dashboard'))->with('pop_error', __('msg.denied'));
         }
@@ -157,13 +176,10 @@ class StudentRecordController extends Controller
             $d['photo'] = asset('storage/' . $f['path']);
         }
 
-        $this->user->update($sr->user->id, $d); // Update User Details
-
+        $this->user->update($sr->user->id, $d);
         $srec = $req->only(Qs::getStudentData());
+        $this->student->updateRecord($sr_id, $srec);
 
-        $this->student->updateRecord($sr_id, $srec); // Update St Rec
-
-        /*** If Class/Section is Changed in Same Year, Delete Marks/ExamRecord of Previous Class/Section ****/
         Mk::deleteOldRecord($sr->user->id, $srec['my_class_id']);
 
         return Qs::jsonUpdateOk();
@@ -181,5 +197,4 @@ class StudentRecordController extends Controller
 
         return back()->with('flash_success', __('msg.del_ok'));
     }
-
 }
