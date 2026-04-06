@@ -6,6 +6,7 @@ return [
     'env' => env('APP_ENV', 'production'),
     'debug' => env('APP_DEBUG', false),
     'url' => env('APP_URL', 'https://las-sms.onrender.com'),
+
     'timezone' => 'UTC',
     'locale' => 'en',
     'fallback_locale' => 'en',
@@ -44,7 +45,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        // ✅ KEEP THIS (PDF works fine in production)
+        // PDF (safe in production)
         Barryvdh\DomPDF\ServiceProvider::class,
     ],
 
@@ -60,7 +61,7 @@ return [
         'Route' => Illuminate\Support\Facades\Route::class,
         'View' => Illuminate\Support\Facades\View::class,
 
-        // ✅ KEEP THIS
+        // PDF alias
         'PDF' => Barryvdh\DomPDF\Facade::class,
     ],
 
