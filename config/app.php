@@ -16,6 +16,12 @@ return [
 
     'providers' => [
 
+        /*
+        |--------------------------------------------------------------------------
+        | Laravel Framework Service Providers
+        |--------------------------------------------------------------------------
+        */
+
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
@@ -39,24 +45,25 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
-        // App Providers
+        /*
+        |--------------------------------------------------------------------------
+        | Application Service Providers
+        |--------------------------------------------------------------------------
+        */
+
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        // PDF (OK for production)
-        Barryvdh\DomPDF\ServiceProvider::class,
-
         /*
         |--------------------------------------------------------------------------
-        | REMOVED IDE HELPER (IMPORTANT FIX)
+        | Third Party Service Providers
         |--------------------------------------------------------------------------
-        | Do NOT include this in production:
-        |
-        | Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
-        |
         */
+
+        Barryvdh\DomPDF\ServiceProvider::class,
+
     ],
 
     'aliases' => [
@@ -71,17 +78,14 @@ return [
         'Route' => Illuminate\Support\Facades\Route::class,
         'View' => Illuminate\Support\Facades\View::class,
 
-        // PDF alias (OK)
-        'PDF' => Barryvdh\DomPDF\Facade::class,
-
         /*
         |--------------------------------------------------------------------------
-        | REMOVED IDE HELPER ALIAS
+        | Third Party Aliases
         |--------------------------------------------------------------------------
-        |
-        | 'IdeHelper' => Barryvdh\LaravelIdeHelper\Facades\IdeHelper::class,
-        |
         */
+
+        'PDF' => Barryvdh\DomPDF\Facade::class,
+
     ],
 
 ];
