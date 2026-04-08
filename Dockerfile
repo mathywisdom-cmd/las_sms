@@ -13,18 +13,18 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy project files
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# 🔥 IMPORTANT FIX: skip scripts to avoid ide-helper crash
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Set correct permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Generate Laravel caches (important for production)
-RUN php artisan config:clear
-RUN php artisan cache:clear
+# Clear caches safely
+RUN php artisan config:clear || true
+RUN php artisan cache:clear || true
 
-# Expose dynamic port
+# Expose port
 EXPOSE 10000
 
-# Start Laravel (IMPORTANT: use $PORT)
+# Start Laravel
 CMD php artisan serve --host=0.0.0.0 --port=$PORT
