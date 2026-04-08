@@ -45,8 +45,18 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        // PDF (safe in production)
+        // PDF (OK for production)
         Barryvdh\DomPDF\ServiceProvider::class,
+
+        /*
+        |--------------------------------------------------------------------------
+        | REMOVED IDE HELPER (IMPORTANT FIX)
+        |--------------------------------------------------------------------------
+        | Do NOT include this in production:
+        |
+        | Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+        |
+        */
     ],
 
     'aliases' => [
@@ -61,8 +71,17 @@ return [
         'Route' => Illuminate\Support\Facades\Route::class,
         'View' => Illuminate\Support\Facades\View::class,
 
-        // PDF alias
+        // PDF alias (OK)
         'PDF' => Barryvdh\DomPDF\Facade::class,
+
+        /*
+        |--------------------------------------------------------------------------
+        | REMOVED IDE HELPER ALIAS
+        |--------------------------------------------------------------------------
+        |
+        | 'IdeHelper' => Barryvdh\LaravelIdeHelper\Facades\IdeHelper::class,
+        |
+        */
     ],
 
 ];
