@@ -2,24 +2,24 @@ FROM php:8.0-cli
 
 WORKDIR /var/www
 
-# Install system dependencies
+# Install system dependencies (FIXED)
 RUN apt-get update && apt-get install -y \
-    unzip zip git curl libzip-dev libonig-dev \
+    unzip zip git curl libzip-dev libonig-dev libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy project files
+# Copy project
 COPY . .
 
-# Install dependencies (IMPORTANT FIX)
+# Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Fix permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# 🔥 VERY IMPORTANT: REMOVE CACHED CONFIG
+# Clear cached config (VERY IMPORTANT)
 RUN rm -f bootstrap/cache/*.php
 
 # Expose port
