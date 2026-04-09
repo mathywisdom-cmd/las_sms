@@ -2,7 +2,7 @@ FROM php:8.0-cli
 
 WORKDIR /var/www
 
-# Install dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     unzip zip git curl libzip-dev libonig-dev \
     && docker-php-ext-install pdo pdo_mysql zip
@@ -10,21 +10,20 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy files
+# Copy project
 COPY . .
 
-# Install Laravel dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Install dependencies WITHOUT scripts (FIX)
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Clear cache
-RUN php artisan config:clear
-RUN php artisan cache:clear
+# Clear cache safely
+RUN php artisan config:clear || true
+RUN php artisan cache:clear || true
 
 # Expose port
 EXPOSE 10000
 
-# ✅ FIXED START COMMAND
-CMD php -S 0.0.0.0:10000 -t public
+CMD php artisan serve --host=0.0.0.0 --port=$PORT
